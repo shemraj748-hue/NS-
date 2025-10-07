@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Naveen Sharma — UPSC Academy</title>
+  <meta name="description" content="Naveen Sharma UPSC Academy — mentorship, courses, demo lectures, test series." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="assets/favicon.ico" />
+</head>
+<body>
+  <!-- NAV (fixed) -->
+  <header class="nav-wrap">
+    <div class="nav container">
+      <a class="logo" href="index.html">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNiIreypV6f0iARV8cnWulG9P6GJtLdOS9Ow&s" alt="Naveen Sharma Logo" />
+      </a>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="demo.html" class="nav-link">Demo</a>
+        <a href="blog.html" class="nav-link">Blog</a>
+        <a href="contact.html" class="nav-link btn-primary">Contact</a>
+      </nav>
+
+      <button class="hamburger" id="menu-toggle" aria-label="Open menu">☰</button>
+    </div>
+  </header>
+
+  <!-- CENTERED HEADINGS below nav -->
+  <section class="hero-headings">
+    <h1 class="neon center">Naveen Sharma UPSC Academy</h1>
+    <h2 class="neon-small center">Mentorship • Test Series • Answer Writing • PYQ Analysis</h2>
+  </section>
+
+  <!-- HERO: headings centered, intro video on right in small box -->
+  <main class="container main-layout">
+    <section class="hero">
+      <div class="hero-left">
+        <p class="lead">
+          Personal mentorship, structured courses and evaluated test-series to help aspirants clear UPSC with confidence. Explore our demo lectures and free resources to begin.
+        </p>
+        <div class="hero-actions">
+          <a href="demo.html" class="btn-outline">Watch Demos</a>
+          <a href="blog.html" class="btn-primary">Read Analysis</a>
+        </div>
+      </div>
+
+      <aside class="hero-right">
+        <div class="intro-box">
+          <!-- YouTube intro video (first video link) -->
+          <iframe src="https://www.youtube.com/embed/L54Uwi-TESM?rel=0" title="Intro - Naveen Sharma UPSC" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </aside>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features">
+      <article class="card hover-change">
+        <h3 class="center">Mentorship</h3>
+        <p>Customized planning, periodic reviews, and personalised feedback.</p>
+      </article>
+
+      <article class="card hover-change">
+        <h3 class="center">Online Courses</h3>
+        <p>Structured topic-wise video courses with PDFs & quizzes.</p>
+      </article>
+
+      <article class="card hover-change">
+        <h3 class="center">Test Series</h3>
+        <p>Timed mock tests for Prelims & Mains with evaluation.</p>
+      </article>
+
+      <article class="card hover-change">
+        <h3 class="center">Answer Writing</h3>
+        <p>Practice, model answers and rubric-based feedback for Mains.</p>
+      </article>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p>© <span id="year"></span> Naveen Sharma — All rights reserved</p>
+      </div>
+      <div class="social">
+        <a href="https://youtube.com/@upscbynaveensharma?si=JooPgT_un7QlUABl" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://www.instagram.com/naveensharma_upsc?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- POPUP MODAL -->
+  <div id="popup" class="modal hidden">
+    <div class="modal-content">
+      <p id="popupMsg">Message here</p>
+      <button id="popupClose" class="btn-outline">Close</button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

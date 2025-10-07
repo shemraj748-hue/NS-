@@ -1,0 +1,21 @@
+{
+  "name": "naveen-upsc-server",
+  "version": "1.0.0",
+  "description": "Backend for Naveen Sharma UPSC Academy — contact, payments, youtube sync, posts API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.5.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "googleapis": "^121.0.0",
+    "nodemailer": "^6.9.4",
+    "node-cron": "^3.0.2",
+    "stripe": "^12.0.0",
+    "fs-extra": "^11.1.1"
+  }
+}
