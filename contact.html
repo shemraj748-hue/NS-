@@ -1,58 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Contact — Naveen Sharma UPSC Academy</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-<header class="nav-wrap">
-  <div class="nav container">
-    <a class="logo" href="index.html"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNiIreypV6f0iARV8cnWulG9P6GJtLdOS9Ow&s" alt="logo" /></a>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-     <a href="demo.html">Demo</a>
-      <a href="blog.html">Blog</a>
-     <a href="contact.html" class="active">Contact</a>
-    </nav>
-    <button class="hamburger" id="menu-toggle">☰</button>
-  </div>
-</header>                     
+<script>
+document.getElementById('contactForm')?.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
 
-<section class="hero-headings">
-  <h1 class="neon center">Get in Touch</h1>
-  <h2 class="neon-small center">We reply quickly — leave a message</h2>
-</section>
+  // 1️⃣ Submit to Formspree
+  fetch('https://formspree.io/f/mjkaeejn', {
+    method: 'POST',
+    body: formData,
+    headers: { 'Accept': 'application/json' }
+  }).catch(err => console.error('Formspree error:', err));
 
-<main class="container">
-  <section class="contact-grid">
-    <form id="contactForm" class="square-form" autocomplete="off">
-      <h3>Contact Form</h3>
-     <form id="contactForm" action="https://formspree.io/f/manpddpq" method="POST">
-  <input type="text" name="name" placeholder="Your Name" required />
-  <input type="email" name="email" placeholder="Your Email" required />
-  <textarea name="message" placeholder="Your Message" required></textarea>
-  <button type="submit">Send</button>
-</form>
-    <div class="contact-info">
-      <h3 class="-small">Contact Details</h3>
-      <p>Email: <a href="mailto:shemraj748@gmail.com">acsn9352@gmail.com</a></p>
-      <p>WhatsApp: <a href="https://wa.me/7042663849">+91 70426 63849</a></p>
-    </div>
-  </section>
-</main>
+  // 2️⃣ Submit to your own backend (for Gmail email)
+  fetch('/api/contact', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: form.name.value,
+      email: form.email.value,
+      message: form.message.value
+    }),
+    headers: { 'Content-Type': 'application/json' }
+  }).then(res => {
+    const blastPopup = document.getElementById('blastPopup');
+    if (res.ok) {
+      if (blastPopup) {
+        blastPopup.querySelector('.blast-message').textContent = '✅ Your form has been submitted. Thank you!';
+        blastPopup.classList.remove('hidden');
+      }
+      form.reset();
+    } else {
+      if (blastPopup) {
+        blastPopup.querySelector('.blast-message').textContent = '⚠️ Submission failed. Please try again.';
+        blastPopup.classList.remove('hidden');
+      }
+    }
+  }).catch(() => {
+    const blastPopup = document.getElementById('blastPopup');
+    if (blastPopup) {
+      blastPopup.querySelector('.blast-message').textContent = '⚠️ Submission failed. Please try again.';
+      blastPopup.classList.remove('hidden');
+    }
+  });
+});
 
-<div id="blastPopup" class="blast-popup hidden">
-  <div class="blast-circle"></div>
-  <div class="blast-message">Your form has been submitted. Thank you!</div>
-  <button id="blastClose" class="btn-outline">Close</button>
-</div>
-
-<script src="main.js"></script>
-</body>
-</html>
-
-
-
+// Close popup
+document.getElementById('blastClose')?.addEventListener('click', () => {
+  const blastPopup = document.getElementById('blastPopup');
+  if (blastPopup) blastPopup.classList.add('hidden');
+});
+</script>
