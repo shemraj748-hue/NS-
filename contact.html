@@ -30,15 +30,12 @@
   <section class="contact-grid">
     <form id="contactForm" class="square-form" autocomplete="off">
       <h3>Contact Form</h3>
-      <label>Name</label>
-      <input name="name" required />
-      <label>Email</label>
-      <input name="email" type="email" required />
-      <label>Message</label>
-      <textarea name="message" rows="4" required></textarea>
-      <button type="submit" class="btn-primary">Submit</button>
-    </form>
-
+     <form id="contactForm" action="https://formspree.io/f/manpddpq" method="POST">
+  <input type="text" name="name" placeholder="Your Name" required />
+  <input type="email" name="email" placeholder="Your Email" required />
+  <textarea name="message" placeholder="Your Message" required></textarea>
+  <button type="submit">Send</button>
+</form>
     <div class="contact-info">
       <h3 class="-small">Contact Details</h3>
       <p>Email: <a href="mailto:shemraj748@gmail.com">acsn9352@gmail.com</a></p>
@@ -56,5 +53,6 @@
 <script src="main.js"></script>
 </body>
 </html>
+
 
 
