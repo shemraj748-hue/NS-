@@ -12,13 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
   });
 
-  // Contact form handler with blast popup and loading state
+  // Contact form handler
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Disable form & show loading text
       const submitBtn = contactForm.querySelector('button[type="submit"]');
       const originalBtnText = submitBtn ? submitBtn.textContent : '';
       if (submitBtn) {
@@ -36,39 +35,33 @@ document.addEventListener('DOMContentLoaded', () => {
       if (blastPopup) blastPopup.classList.remove('hidden');
 
       try {
-        // ✅ CONNECTED TO RENDER BACKEND (replace localhost)
+        // ✅ Replace with your live Render backend URL
         const resp = await fetch('https://ns-kc6b.onrender.com/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
         });
 
-        const data = await resp.json().catch(() => ({ ok: false }));
+        if (!resp.ok) throw new Error(`Server error: ${resp.status}`);
 
-        setTimeout(() => {
-          if (blastPopup) {
-            const msg = blastPopup.querySelector('.blast-message');
-            if (msg) msg.textContent = '✅ Your form has been submitted. Thank you!';
-            const closeBtn = blastPopup.querySelector('#blastClose');
-            if (closeBtn) closeBtn.style.display = 'inline-block';
-          }
-          contactForm.reset();
-        }, 900);
+        const data = await resp.json();
+        if (!data.ok) throw new Error(data.error || 'Unknown server error');
 
+        // Success
+        const msg = blastPopup.querySelector('.blast-message');
+        if (msg) msg.textContent = '✅ Your form has been submitted. We will contact you soon!';
+        const closeBtn = blastPopup.querySelector('#blastClose');
+        if (closeBtn) closeBtn.style.display = 'inline-block';
+
+        contactForm.reset();
       } catch (err) {
-        console.error('Form submission failed', err);
-        setTimeout(() => {
-          if (blastPopup) {
-            const msg = blastPopup.querySelector('.blast-message');
-            if (msg)
-              msg.textContent =
-                '⚠️ Submission saved locally. Please try again later.';
-            const closeBtn = blastPopup.querySelector('#blastClose');
-            if (closeBtn) closeBtn.style.display = 'inline-block';
-          }
-        }, 900);
+        console.error('Form submission failed:', err);
+
+        const msg = blastPopup.querySelector('.blast-message');
+        if (msg) msg.textContent = '⚠️ Submission failed. Please try again later.';
+        const closeBtn = blastPopup.querySelector('#blastClose');
+        if (closeBtn) closeBtn.style.display = 'inline-block';
       } finally {
-        // Re-enable button
         if (submitBtn) {
           submitBtn.textContent = originalBtnText || 'Submit';
           submitBtn.disabled = false;
@@ -83,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (blastPopup) blastPopup.classList.add('hidden');
   });
 
-  // Load posts for blog page
+  // Load blog posts
   loadPosts();
 });
 
@@ -96,8 +89,10 @@ async function loadPosts() {
   grid.innerHTML = '<p class="muted">Loading posts…</p>';
 
   try {
-    // ✅ CONNECTED TO RENDER BACKEND
+    // ✅ Render backend URL for posts
     const res = await fetch('https://ns-kc6b.onrender.com/api/posts');
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
     const data = await res.json();
 
     if (!data.ok || !data.posts || data.posts.length === 0) {
@@ -129,8 +124,8 @@ async function loadPosts() {
       grid.appendChild(el);
     });
   } catch (err) {
-    console.error('Failed to load posts', err);
-    grid.innerHTML = '<p class="muted">Failed to load posts.</p>';
+    console.error('Failed to load posts:', err);
+    grid.innerHTML = '<p class="muted">Failed to load posts. Please try again later.</p>';
   }
 }
 
