@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -13,9 +12,9 @@
     <nav class="nav-links">
       <a href="index.html">Home</a>
       <a href="about.html">About</a>
-      <a href="demo.html">Demo</a>
+     <a href="demo.html">Demo</a>
       <a href="blog.html">Blog</a>
-      <a href="contact.html" class="active">Contact</a>
+     <a href="contact.html" class="active">Contact</a>
     </nav>
     <button class="hamburger" id="menu-toggle">☰</button>
   </div>
@@ -28,17 +27,17 @@
 
 <main class="container">
   <section class="contact-grid">
-    <form id="contactForm" class="square-form" autocomplete="off" action="https://formspree.io/f/manpddpq" method="POST">
+    <form id="contactForm" class="square-form" autocomplete="off">
       <h3>Contact Form</h3>
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-      <textarea name="message" placeholder="Your Message" required></textarea>
-      <button type="submit">Send</button>
-    </form>
-
+     <form id="contactForm" action="https://formspree.io/f/manpddpq" method="POST">
+  <input type="text" name="name" placeholder="Your Name" required />
+  <input type="email" name="email" placeholder="Your Email" required />
+  <textarea name="message" placeholder="Your Message" required></textarea>
+  <button type="submit">Send</button>
+</form>
     <div class="contact-info">
       <h3 class="-small">Contact Details</h3>
-      <p>Email: <a href="mailto:acsn9352@gmail.com">acsn9352@gmail.com</a></p>
+      <p>Email: <a href="mailto:shemraj748@gmail.com">acsn9352@gmail.com</a></p>
       <p>WhatsApp: <a href="https://wa.me/7042663849">+91 70426 63849</a></p>
     </div>
   </section>
@@ -50,44 +49,9 @@
   <button id="blastClose" class="btn-outline">Close</button>
 </div>
 
-<script>
-document.getElementById('contactForm')?.addEventListener('submit', function(e) {
-  e.preventDefault();
-  const form = e.target;
-  const submitBtn = form.querySelector('button[type="submit"]');
-  submitBtn.textContent = 'Sending...';
-  submitBtn.disabled = true;
-
-  fetch(form.action, {
-    method: 'POST',
-    body: new FormData(form),
-    headers: { 'Accept': 'application/json' }
-  }).then(res => {
-    submitBtn.textContent = 'Send';
-    submitBtn.disabled = false;
-    const blastPopup = document.getElementById('blastPopup');
-    if (res.ok) {
-      if (blastPopup) {
-        blastPopup.querySelector('.blast-message').textContent = '✅ Your form has been submitted. Thank you!';
-        blastPopup.classList.remove('hidden');
-      }
-      form.reset();
-    } else {
-      if (blastPopup) {
-        blastPopup.querySelector('.blast-message').textContent = '⚠️ Submission failed. Please try again.';
-        blastPopup.classList.remove('hidden');
-    }
-  });
-});
-
-// Close popup
-document.getElementById('blastClose')?.addEventListener('click', () => {
-  const blastPopup = document.getElementById('blastPopup');
-  if (blastPopup) blastPopup.classList.add('hidden');
-});
-</script>
-
 <script src="main.js"></script>
 </body>
 </html>
+
+
 
