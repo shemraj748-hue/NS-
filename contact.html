@@ -76,15 +76,6 @@ document.getElementById('contactForm')?.addEventListener('submit', function(e) {
       if (blastPopup) {
         blastPopup.querySelector('.blast-message').textContent = '⚠️ Submission failed. Please try again.';
         blastPopup.classList.remove('hidden');
-      }
-    }
-  }).catch(err => {
-    submitBtn.textContent = 'Send';
-    submitBtn.disabled = false;
-    const blastPopup = document.getElementById('blastPopup');
-    if (blastPopup) {
-      blastPopup.querySelector('.blast-message').textContent = '⚠️ Submission failed. Please try again.';
-      blastPopup.classList.remove('hidden');
     }
   });
 });
@@ -99,3 +90,4 @@ document.getElementById('blastClose')?.addEventListener('click', () => {
 <script src="main.js"></script>
 </body>
 </html>
+
