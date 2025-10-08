@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
   });
 
-  // Contact form handler
+  // Contact form
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
@@ -20,10 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const submitBtn = contactForm.querySelector('button[type="submit"]');
       const originalBtnText = submitBtn?.textContent || 'Submit';
-      if (submitBtn) {
-        submitBtn.textContent = 'Submitting...';
-        submitBtn.disabled = true;
-      }
+      if (submitBtn) { submitBtn.textContent = 'Submitting...'; submitBtn.disabled = true; }
 
       const formData = {
         name: contactForm.name.value.trim(),
@@ -35,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (blastPopup) blastPopup.classList.remove('hidden');
 
       try {
-        // ✅ Render backend URL
+        // ✅ Correct Render backend URL
         const resp = await fetch('https://ns-kc6b.onrender.com/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -43,49 +40,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const data = await resp.json();
-        setTimeout(() => {
-          if (blastPopup) {
-            const msg = blastPopup.querySelector('.blast-message');
-            if (msg) msg.textContent = data.ok
-              ? '✅ Your form has been submitted. We will contact you soon!'
-              : '⚠️ Submission failed. Please try again later.';
-            blastPopup.querySelector('#blastClose').style.display = 'inline-block';
-          }
+
+        if (data.ok) {
+          showPopup('✅ Your form has been submitted. We will contact you soon!');
           contactForm.reset();
-        }, 900);
+        } else {
+          showPopup('⚠️ Submission failed. Please try again later.');
+        }
+
       } catch (err) {
         console.error('Form submission error', err);
-        setTimeout(() => {
-          if (blastPopup) {
-            const msg = blastPopup.querySelector('.blast-message');
-            if (msg) msg.textContent = '⚠️ Submission failed. Please try again later.';
-            blastPopup.querySelector('#blastClose').style.display = 'inline-block';
-          }
-        }, 900);
+        showPopup('⚠️ Submission failed. Please try again later.');
       } finally {
-        if (submitBtn) {
-          submitBtn.textContent = originalBtnText;
-          submitBtn.disabled = false;
-        }
+        if (submitBtn) { submitBtn.textContent = originalBtnText; submitBtn.disabled = false; }
       }
     });
   }
 
-  // Close popup
   document.getElementById('blastClose')?.addEventListener('click', () => {
     const blastPopup = document.getElementById('blastPopup');
     if (blastPopup) blastPopup.classList.add('hidden');
   });
 
-  // Load blog posts (YouTube shorts)
+  // Load YouTube shorts/blog posts
   loadPosts();
 });
 
-// Load posts from Render backend
+function showPopup(message) {
+  const blastPopup = document.getElementById('blastPopup');
+  if (!blastPopup) return;
+  const msg = blastPopup.querySelector('.blast-message');
+  if (msg) msg.textContent = message;
+  const closeBtn = blastPopup.querySelector('#blastClose');
+  if (closeBtn) closeBtn.style.display = 'inline-block';
+  blastPopup.classList.remove('hidden');
+}
+
+// Load posts from backend
 async function loadPosts() {
   const grid = document.querySelector('.posts-grid') || document.getElementById('postsGrid');
   if (!grid) return;
-
   grid.innerHTML = '<p class="muted">Loading posts…</p>';
 
   try {
@@ -102,7 +96,7 @@ async function loadPosts() {
       const el = document.createElement('article');
       el.className = 'card hover-change';
       el.innerHTML = `
-        <iframe src="https://www.youtube.com/embed/${p.id || p.videoUrl.split('v=')[1]}" 
+        <iframe src="https://www.youtube.com/embed/${p.id}" 
                 frameborder="0" allowfullscreen 
                 style="width:100%;height:200px;border-radius:8px;margin-bottom:8px;"></iframe>
         <h3>${escapeHtml(p.title)}</h3>
@@ -121,10 +115,6 @@ async function loadPosts() {
 
 function escapeHtml(text = '') {
   return text.replace(/[&<>"']/g, m => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[m]));
 }
