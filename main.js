@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (blastPopup) blastPopup.classList.remove('hidden');
 
       try {
+        // ✅ CONNECTED TO RENDER BACKEND (replace localhost)
         const resp = await fetch('https://ns-kc6b.onrender.com/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
           if (blastPopup) {
             const msg = blastPopup.querySelector('.blast-message');
-            if (msg) msg.textContent = '✅ Your form has been submitted. We will contact you soon!';
+            if (msg) msg.textContent = '✅ Your form has been submitted. Thank you!';
             const closeBtn = blastPopup.querySelector('#blastClose');
             if (closeBtn) closeBtn.style.display = 'inline-block';
           }
@@ -60,9 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (blastPopup) {
             const msg = blastPopup.querySelector('.blast-message');
             if (msg)
+              msg.textContent =
+                '⚠️ Submission saved locally. Please try again later.';
+            const closeBtn = blastPopup.querySelector('#blastClose');
+            if (closeBtn) closeBtn.style.display = 'inline-block';
           }
         }, 900);
       } finally {
+        // Re-enable button
         if (submitBtn) {
           submitBtn.textContent = originalBtnText || 'Submit';
           submitBtn.disabled = false;
@@ -83,12 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Load posts from backend
 async function loadPosts() {
-  const grid = document.querySelector('.posts-grid') || document.getElementById('postsGrid');
+  const grid =
+    document.querySelector('.posts-grid') || document.getElementById('postsGrid');
   if (!grid) return;
 
   grid.innerHTML = '<p class="muted">Loading posts…</p>';
 
   try {
+    // ✅ CONNECTED TO RENDER BACKEND
     const res = await fetch('https://ns-kc6b.onrender.com/api/posts');
     const data = await res.json();
 
@@ -98,10 +106,7 @@ async function loadPosts() {
     }
 
     grid.innerHTML = '';
-    // Sort posts: newest first
-    const sortedPosts = data.posts.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-
-    sortedPosts.forEach((p) => {
+    data.posts.forEach((p) => {
       const el = document.createElement('article');
       el.className = 'card hover-change';
       el.innerHTML = `
@@ -141,4 +146,3 @@ function escapeHtml(text = '') {
     }[m];
   });
 }
-
