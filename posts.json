@@ -1,0 +1,19 @@
+{
+  "posts": [
+    {
+      "title": "Short 1 Title",
+      "description": "",
+      "publishedAt": "2025-10-01T12:00:00Z",
+      "thumbnail": "https://img.youtube.com/vi/kLaeRMphL6g/hqdefault.jpg",
+      "videoUrl": "https://youtube.com/shorts/kLaeRMphL6g"
+    },
+    {
+      "title": "Short 2 Title",
+      "description": "",
+      "publishedAt": "2025-10-02T12:00:00Z",
+      "thumbnail": "https://img.youtube.com/vi/pAQXKGTZh6c/hqdefault.jpg",
+      "videoUrl": "https://youtube.com/shorts/pAQXKGTZh6c"
+    }
+  ],
+  "lastCheckedVideoId": null
+}
