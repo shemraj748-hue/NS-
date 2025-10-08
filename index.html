@@ -103,3 +103,30 @@
   <script src="main.js"></script>
 </body>
 </html>
+<style>/* Neon glowing effect for Watch Demos button */
+.hero-actions .btn-outline {
+  color: #fff;
+  border: 2px solid #ff00ff;
+  background: linear-gradient(45deg, #ff9900, #00ccff, #ff00ff, #00ff99);
+  background-size: 400% 400%;
+  border-radius: 6px; /* keep current button radius */
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 0 0 5px #ff9900, 0 0 10px #00ccff, 0 0 15px #ff00ff;
+  animation: neonOutlineGradient 6s ease infinite;
+  transition: 0.3s;
+}
+
+.hero-actions .btn-outline:hover {
+  box-shadow: 0 0 15px #ff9900, 0 0 25px #00ccff, 0 0 35px #ff00ff;
+  transform: scale(1.05);
+}
+
+@keyframes neonOutlineGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+</style>
+
