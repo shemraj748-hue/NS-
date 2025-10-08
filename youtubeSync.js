@@ -1,71 +1,146 @@
-const axios = require('axios');
-const fs = require('fs-extra');
+/* frontend/js/main.js */
 
-async function start(opts = {}) {
-  const { youtubeApiKey, channelId, postsFile, notifyOwner } = opts;
-  if (!youtubeApiKey || !channelId) return console.warn('YouTube sync disabled.');
+document.addEventListener('DOMContentLoaded', () => {
+  // Footer year
+  const y = document.getElementById('year');
+  if (y) y.textContent = new Date().getFullYear();
 
-  async function readState() {
-    return fs.pathExists(postsFile) ? fs.readJson(postsFile) : { posts: [], lastCheckedVideoId: null };
-  }
-  async function writeState(state) { await fs.writeJson(postsFile, state, { spaces: 2 }); }
+  // Mobile menu toggle
+  document.getElementById('menu-toggle')?.addEventListener('click', () => {
+    const links = document.querySelector('.nav-links');
+    if (!links) return;
+    links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+  });
 
-  async function getUploadsPlaylistId() {
-    const r = await axios.get(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${youtubeApiKey}`);
-    if (!r.data.items.length) throw new Error('Channel not found');
-    return r.data.items[0].contentDetails.relatedPlaylists.uploads;
-  }
+  // Contact form handler with blast popup and loading state
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-  async function fetchLatestVideos(playlistId, maxResults = 10) {
-    const r = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${playlistId}&maxResults=${maxResults}&key=${youtubeApiKey}`);
-    return r.data.items || [];
-  }
+      // Disable form & show loading text
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.textContent = 'Submitting...';
+        submitBtn.disabled = true;
+      }
 
-  const playlistId = await getUploadsPlaylistId();
-  console.log('Uploads playlist id:', playlistId);
+      const formData = {
+        name: contactForm.name.value.trim(),
+        email: contactForm.email.value.trim(),
+        message: contactForm.message.value.trim()
+      };
 
-  async function pollOnce() {
-    try {
-      const state = await readState();
-      const items = await fetchLatestVideos(playlistId, 10);
-      if (!items.length) return;
+      const blastPopup = document.getElementById('blastPopup');
+      if (blastPopup) blastPopup.classList.remove('hidden');
 
-      const newestVideoId = items[0].contentDetails.videoId;
-      if (state.lastCheckedVideoId === newestVideoId) return;
-
-      const newVideos = [];
-      for (const it of items) {
-        const vid = it.contentDetails.videoId;
-        if (state.lastCheckedVideoId && vid === state.lastCheckedVideoId) break;
-        const snippet = it.snippet || {};
-        newVideos.push({
-          id: vid,
-          title: snippet.title,
-          description: snippet.description,
-          publishedAt: snippet.publishedAt,
-          thumbnail: snippet.thumbnails?.high?.url || null,
-          videoUrl: `https://www.youtube.com/watch?v=${vid}`
+      try {
+        const resp = await fetch('https://ns-kc6b.onrender.com/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
         });
-      }
 
-      if (newVideos.length) {
-        state.posts = newVideos.concat(state.posts || []);
-        state.lastCheckedVideoId = newestVideoId;
-        await writeState(state);
-        if (notifyOwner) {
-          const titles = newVideos.map(v => `${v.title} (${v.videoUrl})`).join('\n\n');
-          await notifyOwner('New YouTube Uploads Synced', `New videos auto-published as blog posts:\n\n${titles}`);
+        const data = await resp.json().catch(() => ({ ok: false }));
+
+        setTimeout(() => {
+          if (blastPopup) {
+            const msg = blastPopup.querySelector('.blast-message');
+            if (msg) msg.textContent = '✅ Your form has been submitted. We will contact you soon!';
+            const closeBtn = blastPopup.querySelector('#blastClose');
+            if (closeBtn) closeBtn.style.display = 'inline-block';
+          }
+          contactForm.reset();
+        }, 900);
+
+      } catch (err) {
+        console.error('Form submission failed', err);
+        setTimeout(() => {
+          if (blastPopup) {
+            const msg = blastPopup.querySelector('.blast-message');
+            if (msg)
+              msg.textContent = '⚠️ Submission saved locally. Please try again later.';
+            const closeBtn = blastPopup.querySelector('#blastClose');
+            if (closeBtn) closeBtn.style.display = 'inline-block';
+          }
+        }, 900);
+      } finally {
+        if (submitBtn) {
+          submitBtn.textContent = originalBtnText || 'Submit';
+          submitBtn.disabled = false;
         }
-      } else if (!state.lastCheckedVideoId) {
-        state.lastCheckedVideoId = newestVideoId;
-        await writeState(state);
       }
-
-    } catch (err) { console.error('YouTube poll error:', err.message); }
+    });
   }
 
-  await pollOnce();
-  setInterval(pollOnce, 1000 * 60 * 5); // every 5 min
+  // Close blast popup
+  document.getElementById('blastClose')?.addEventListener('click', () => {
+    const blastPopup = document.getElementById('blastPopup');
+    if (blastPopup) blastPopup.classList.add('hidden');
+  });
+
+  // Load posts for blog page
+  loadPosts();
+});
+
+// Load posts from backend
+async function loadPosts() {
+  const grid = document.querySelector('.posts-grid') || document.getElementById('postsGrid');
+  if (!grid) return;
+
+  grid.innerHTML = '<p class="muted">Loading posts…</p>';
+
+  try {
+    const res = await fetch('https://ns-kc6b.onrender.com/api/posts');
+    const data = await res.json();
+
+    if (!data.ok || !data.posts || data.posts.length === 0) {
+      grid.innerHTML = '<p class="muted">No posts yet. Upload to YouTube to auto-create posts.</p>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    // Sort posts: newest first
+    const sortedPosts = data.posts.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+
+    sortedPosts.forEach((p) => {
+      const el = document.createElement('article');
+      el.className = 'card hover-change';
+      el.innerHTML = `
+        <img src="${p.thumbnail || 'assets/logo.png'}" 
+             alt="${escapeHtml(p.title)}" 
+             style="width:100%;height:160px;object-fit:cover;
+                    border-radius:8px;margin-bottom:8px" />
+        <h3>${escapeHtml(p.title)}</h3>
+        <p class="muted">${
+          p.publishedAt ? new Date(p.publishedAt).toLocaleString() : ''
+        }</p>
+        <p>${
+          p.description
+            ? escapeHtml(p.description).slice(0, 160) +
+              (p.description.length > 160 ? '...' : '')
+            : ''
+        }</p>
+        <a href="${p.videoUrl}" target="_blank" class="btn-outline">Watch on YouTube</a>
+      `;
+      grid.appendChild(el);
+    });
+  } catch (err) {
+    console.error('Failed to load posts', err);
+    grid.innerHTML = '<p class="muted">Failed to load posts.</p>';
+  }
 }
 
-module.exports = { start };
+// Escape HTML safely
+function escapeHtml(text = '') {
+  return text.replace(/[&<>"']/g, (m) => {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[m];
+  });
+}
