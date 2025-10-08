@@ -5,6 +5,35 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Contact — Naveen Sharma UPSC Academy</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Neon glowing submit button */
+    .square-form button[type="submit"] {
+      background: linear-gradient(45deg, #ff00ff, #00ffff, #ff0000, #00ff00);
+      background-size: 400% 400%;
+      border: none;
+      padding: 12px 30px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      text-transform: uppercase;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
+      animation: neonGradient 6s ease infinite;
+      transition: 0.3s;
+    }
+
+    .square-form button[type="submit"]:hover {
+      box-shadow: 0 0 20px #fff, 0 0 30px #ff00ff, 0 0 40px #00ffff;
+      transform: scale(1.05);
+    }
+
+    @keyframes neonGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
 </head>
 <body>
 <header class="nav-wrap">
@@ -33,12 +62,12 @@
       <input type="text" name="name" placeholder="Your Name" required />
       <input type="email" name="email" placeholder="Your Email" required />
       <textarea name="message" placeholder="Your Message" required></textarea>
-      <button type="submit">Send</button>
+      <button type="submit">Send Message</button>
     </form>
 
     <div class="contact-info">
       <h3 class="-small">Contact Details</h3>
-      <p>Email: <a href="mailto:gsgurunaveensharma@gmail.com">gsgurunaveensharma@gmail.com </a></p>
+      <p>Email: <a href="mailto:gsgurunaveensharma@gmail.com">gsgurunaveensharma@gmail.com</a></p>
       <p>WhatsApp: <a href="https://wa.me/7042663849">+91 70426 63849</a></p>
     </div>
   </section>
@@ -46,41 +75,10 @@
 
 <div id="blastPopup" class="blast-popup hidden">
   <div class="blast-circle"></div>
-  <div class="blast-message">Your form has been submitted. Thank you!We will contact you.</div>
+  <div class="blast-message">Your form has been submitted. Thank you!</div>
   <button id="blastClose" class="btn-outline">Close</button>
 </div>
-
-<script>
-document.getElementById('contactForm')?.addEventListener('submit', function(e) {
-  e.preventDefault();
-  const form = e.target;
-  const formData = new FormData(form);
-
-  // 1️⃣ Submit to Formspree
-  fetch('https://formspree.io/f/mjkaeejn', {
-    method: 'POST',
-    body: formData,
-    headers: { 'Accept': 'application/json' }
-  }).catch(err => console.error('Formspree error:', err));
-
-  // 2️⃣ Show popup locally
-  const blastPopup = document.getElementById('blastPopup');
-  if (blastPopup) {
-    blastPopup.querySelector('.blast-message').textContent = '✅ Your form has been submitted. Thank you!';
-    blastPopup.classList.remove('hidden');
-  }
-  form.reset();
-});
-
-// Close popup
-document.getElementById('blastClose')?.addEventListener('click', () => {
-  const blastPopup = document.getElementById('blastPopup');
-  if (blastPopup) blastPopup.classList.add('hidden');
-});
-</script>
 
 <script src="main.js"></script>
 </body>
 </html>
-
-
