@@ -8,34 +8,18 @@ async function start(opts = {}) {
   async function readState() {
     return fs.pathExists(postsFile) ? fs.readJson(postsFile) : { posts: [], lastCheckedVideoId: null };
   }
+
   async function writeState(state) { await fs.writeJson(postsFile, state, { spaces: 2 }); }
 
   async function getUploadsPlaylistId() {
-    const r = await axios.get(`https://www.googleapis.com/youtube/v3/channels`, {
-      params: { part: 'contentDetails', id: channelId, key: youtubeApiKey }
-    });
+    const r = await axios.get(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${youtubeApiKey}`);
     if (!r.data.items.length) throw new Error('Channel not found');
     return r.data.items[0].contentDetails.relatedPlaylists.uploads;
   }
 
-  // Fetch all videos from playlist with pagination
-  async function fetchAllVideos(playlistId) {
-    let allItems = [];
-    let nextPageToken = '';
-    do {
-      const r = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
-        params: {
-          part: 'snippet,contentDetails',
-          playlistId,
-          maxResults: 50,
-          pageToken: nextPageToken,
-          key: youtubeApiKey
-        }
-      });
-      allItems = allItems.concat(r.data.items || []);
-      nextPageToken = r.data.nextPageToken;
-    } while (nextPageToken);
-    return allItems;
+  async function fetchLatestVideos(playlistId, maxResults = 50) {
+    const r = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId=${playlistId}&maxResults=${maxResults}&key=${youtubeApiKey}`);
+    return r.data.items || [];
   }
 
   const playlistId = await getUploadsPlaylistId();
@@ -44,16 +28,14 @@ async function start(opts = {}) {
   async function pollOnce() {
     try {
       const state = await readState();
-      const items = await fetchAllVideos(playlistId);
+      const items = await fetchLatestVideos(playlistId, 50);
       if (!items.length) return;
 
       const newestVideoId = items[0].contentDetails.videoId;
-      const knownIds = new Set(state.posts.map(p => p.id));
-
       const newVideos = [];
       for (const it of items) {
         const vid = it.contentDetails.videoId;
-        if (knownIds.has(vid)) continue; // Skip already saved videos
+        if (state.lastCheckedVideoId && vid === state.lastCheckedVideoId) break;
         const snippet = it.snippet || {};
         newVideos.push({
           id: vid,
@@ -69,21 +51,21 @@ async function start(opts = {}) {
         state.posts = newVideos.concat(state.posts || []);
         state.lastCheckedVideoId = newestVideoId;
         await writeState(state);
-
         if (notifyOwner) {
           const titles = newVideos.map(v => `${v.title} (${v.videoUrl})`).join('\n\n');
-          await notifyOwner('New YouTube Uploads Synced', `New videos auto-published as blog posts:\n\n${titles}`);
+          await notifyOwner('New YouTube Uploads Synced', `New videos auto-published:\n\n${titles}`);
         }
       } else if (!state.lastCheckedVideoId) {
         state.lastCheckedVideoId = newestVideoId;
         await writeState(state);
       }
+
     } catch (err) { console.error('YouTube poll error:', err.message); }
   }
 
-  // Initial poll
+  // First run
   await pollOnce();
-  // Repeat every 5 minutes
+  // Poll every 5 minutes for new shorts
   setInterval(pollOnce, 1000 * 60 * 5);
 }
 
