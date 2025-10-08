@@ -12,11 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
   });
 
-  // Contact form handler
+  // Contact form handler with blast popup and loading state
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      // Disable form & show loading text
       const submitBtn = contactForm.querySelector('button[type="submit"]');
       const originalBtnText = submitBtn ? submitBtn.textContent : '';
       if (submitBtn) {
@@ -39,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
         });
-        await resp.json();
+
+        const data = await resp.json().catch(() => ({ ok: false }));
 
         setTimeout(() => {
           if (blastPopup) {
@@ -50,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           contactForm.reset();
         }, 900);
+
       } catch (err) {
         console.error('Form submission failed', err);
         setTimeout(() => {
@@ -76,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (blastPopup) blastPopup.classList.add('hidden');
   });
 
-  // Load posts (Shorts) for blog page
+  // Load posts for blog page
   loadPosts();
 });
 
@@ -96,25 +100,28 @@ async function loadPosts() {
       return;
     }
 
-    // Sort newest first
+    grid.innerHTML = '';
+    // Sort posts: newest first
     const sortedPosts = data.posts.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-    grid.innerHTML = '';
     sortedPosts.forEach((p) => {
       const el = document.createElement('article');
       el.className = 'card hover-change';
       el.innerHTML = `
-        <div class="post-thumbnail" style="
-          background-image:url('${p.thumbnail || 'assets/logo.png'}');
-          background-size:cover;
-          background-position:center;
-          width:100%;
-          height:180px;
-          border-radius:8px;
-          margin-bottom:12px;"></div>
+        <img src="${p.thumbnail || 'assets/logo.png'}" 
+             alt="${escapeHtml(p.title)}" 
+             style="width:100%;height:160px;object-fit:cover;
+                    border-radius:8px;margin-bottom:8px" />
         <h3>${escapeHtml(p.title)}</h3>
-        <p class="muted">${p.publishedAt ? new Date(p.publishedAt).toLocaleString() : ''}</p>
-        <p>${p.description ? escapeHtml(p.description).slice(0, 120) + (p.description.length>120?'...':'') : ''}</p>
+        <p class="muted">${
+          p.publishedAt ? new Date(p.publishedAt).toLocaleString() : ''
+        }</p>
+        <p>${
+          p.description
+            ? escapeHtml(p.description).slice(0, 160) +
+              (p.description.length > 160 ? '...' : '')
+            : ''
+        }</p>
         <a href="${p.videoUrl}" target="_blank" class="btn-outline">Watch on YouTube</a>
       `;
       grid.appendChild(el);
@@ -127,5 +134,13 @@ async function loadPosts() {
 
 // Escape HTML safely
 function escapeHtml(text = '') {
-  return text.replace(/[&<>"']/g, (m) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]));
+  return text.replace(/[&<>"']/g, (m) => {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[m];
+  });
 }
