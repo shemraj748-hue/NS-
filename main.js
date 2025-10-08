@@ -60,9 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if (blastPopup) {
             const msg = blastPopup.querySelector('.blast-message');
             if (msg)
-              msg.textContent = '⚠️ Submission saved locally. Please try again later.';
-            const closeBtn = blastPopup.querySelector('#blastClose');
-            if (closeBtn) closeBtn.style.display = 'inline-block';
           }
         }, 900);
       } finally {
@@ -144,3 +141,4 @@ function escapeHtml(text = '') {
     }[m];
   });
 }
+
