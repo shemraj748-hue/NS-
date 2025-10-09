@@ -1,84 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact — Naveen Sharma UPSC Academy</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Neon glowing submit button */
-    .square-form button[type="submit"] {
-      background: linear-gradient(45deg, #ff00ff, #00ffff, #ff0000, #00ff00);
-      background-size: 400% 400%;
-      border: none;
-      padding: 12px 30px;
-      font-size: 18px;
-      font-weight: bold;
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #000;
       color: #fff;
-      text-transform: uppercase;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #00ffff;
-      animation: neonGradient 6s ease infinite;
-      transition: 0.3s;
+      margin: 0;
+      padding: 0;
+      text-align: center;
     }
 
-    .square-form button[type="submit"]:hover {
-      box-shadow: 0 0 20px #fff, 0 0 30px #ff00ff, 0 0 40px #00ffff;
+    h1 {
+      margin-top: 50px;
+      font-size: 2.5em;
+      color: #0ff;
+    }
+
+    .contact-container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      box-shadow: 0 0 20px #0ff;
+    }
+
+    input, textarea {
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 1em;
+    }
+
+    textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    /* Neon animated button */
+    .neon-btn {
+      position: relative;
+      padding: 12px 30px;
+      background: linear-gradient(90deg, #0ff, #00f, #f0f, #0ff);
+      background-size: 400%;
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+      animation: glowMove 6s linear infinite;
+    }
+
+    @keyframes glowMove {
+      0% { background-position: 0%; }
+      100% { background-position: 400%; }
+    }
+
+    .neon-btn:hover {
+      box-shadow: 0 0 20px #0ff, 0 0 40px #0ff;
       transform: scale(1.05);
     }
 
-    @keyframes neonGradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    a {
+      color: #0ff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-shadow: 0 0 10px #0ff;
     }
   </style>
 </head>
 <body>
-<header class="nav-wrap">
-  <div class="nav container">
-    <a class="logo" href="index.html"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNiIreypV6f0iARV8cnWulG9P6GJtLdOS9Ow&s" alt="logo" /></a>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="demo.html">Demo</a>
-      <a href="blog.html">Blog</a>
-      <a href="contact.html" class="active">Contact</a>
-    </nav>
-    <button class="hamburger" id="menu-toggle">☰</button>
-  </div>
-</header>                     
 
-<section class="hero-headings">
-  <h1 class="neon center">Get in Touch</h1>
-  <h2 class="neon-small center">We reply quickly — leave a message</h2>
-</section>
+  <h1>Contact Us</h1>
 
-<main class="container">
-  <section class="contact-grid">
-    <form id="contactForm" class="square-form" autocomplete="off">
-      <h3>Contact Form</h3>
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
+  <div class="contact-container">
+    <form id="contactForm"
+          action="https://formspree.io/f/mjkaeejn"
+          method="POST"
+          autocomplete="off">
+
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
       <textarea name="message" placeholder="Your Message" required></textarea>
-      <button type="submit">Send Message</button>
+
+      <button type="submit" class="neon-btn">Send</button>
     </form>
 
-    <div class="contact-info">
-      <h3 class="-small">Contact Details</h3>
-      <p>Email: <a href="mailto:gsgurunaveensharma@gmail.com">gsgurunaveensharma@gmail.com</a></p>
-      <p>WhatsApp: <a href="https://wa.me/7042663849">+91 70426 63849</a></p>
-    </div>
-  </section>
-</main>
+    <p style="margin-top: 20px;">
+      Email: <a href="mailto:gsgurunaveensharma@gmail.com">gsgurunaveensharma@gmail.com</a><br>
+      WhatsApp: <a href="https://wa.me/7042663849" target="_blank">+91 70426 63849</a>
+    </p>
+  </div>
 
-<div id="blastPopup" class="blast-popup hidden">
-  <div class="blast-circle"></div>
-  <div class="blast-message">Your form has been submitted. Thank you!</div>
-  <button id="blastClose" class="btn-outline">Close</button>
-</div>
+  <script>
+    // Form submission handler for Formspree
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+      contactForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
 
-<script src="main.js"></script>
+        fetch(this.action, {
+          method: this.method,
+          body: formData,
+          headers: { Accept: 'application/json' }
+        })
+          .then(response => {
+            if (response.ok) {
+              alert("✅ Your form has been submitted successfully!");
+              contactForm.reset();
+            } else {
+              alert("⚠️ Submission failed. Please try again later.");
+            }
+          })
+          .catch(() => {
+            alert("⚠️ Submission could not be sent. Try again later.");
+          });
+      });
+    }
+  </script>
+
 </body>
 </html>
